@@ -1,0 +1,46 @@
+/////////////////////////////////////////////////////////
+// Config for the JMusicBot                            //
+/////////////////////////////////////////////////////////
+// Any line starting with // is ignored                //
+// You MUST set the token and owner                    //
+// All other items have defaults if you don't set them //
+/////////////////////////////////////////////////////////
+
+// REQUIRED: Discord bot token (from https://discord.com/developers/applications)
+token = HIER_TOKEN_EINFUEGEN
+
+// REQUIRED: Owner's Discord User ID (17-18 digit number, Developer Mode > Rechtsklick > ID kopieren)
+owner = 123456789012345678
+
+// Command prefix (@mention means mention the bot)
+prefix = "@mention"
+
+// Status text ("DEFAULT", "Playing X", "Listening to X", "Watching X", "NONE", "STREAMING url text")
+game = "DEFAULT"
+
+// Online status: ONLINE, IDLE, DND, INVISIBLE
+status = ONLINE
+
+// Show song title in bot status
+songinstatus = false
+
+// Secondary command prefix
+altprefix = "NONE"
+
+// Stay in voice channel after queue finishes
+stayinchannel = false
+
+// Max track duration in seconds (0 = no limit)
+maxtime = 0
+
+// Skip vote ratio
+skipratio = 0.55
+
+// Seconds to wait alone before leaving (0 = never)
+alonetimeuntilstop = 0
+
+// Folder for playlists
+playlistsfolder = "Playlists"
+
+// Log level: off, error, warn, info, debug, trace, all
+loglevel = info
