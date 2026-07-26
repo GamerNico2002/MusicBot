@@ -18,8 +18,8 @@ package com.jagrosh.jmusicbot.utils;
 import com.jagrosh.jmusicbot.JMusicBot;
 import com.jagrosh.jmusicbot.entities.Prompt;
 import java.io.*;
-import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -102,7 +102,8 @@ public class OtherUtil
             return null;
         try 
         {
-            URLConnection urlConnection = URI.create(url).toURL().openConnection();
+            URL u = new URL(url);
+            URLConnection urlConnection = u.openConnection();
             urlConnection.setRequestProperty("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36");
             return urlConnection.getInputStream();
         }
