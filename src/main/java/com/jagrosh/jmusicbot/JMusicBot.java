@@ -15,7 +15,6 @@
  */
 package com.jagrosh.jmusicbot;
 
-import club.minnced.discord.jdave.interop.JDaveSessionFactory;
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -126,8 +125,7 @@ public class JMusicBot
                     .setStatus(config.getStatus()==OnlineStatus.OFFLINE
                             ? OnlineStatus.OFFLINE : OnlineStatus.DO_NOT_DISTURB)
                     .addEventListeners(client, waiter, new Listener(bot))
-                    .setAudioModuleConfig(new AudioModuleConfig()
-                        .withDaveSessionFactory(new JDaveSessionFactory()))
+                    .setAudioModuleConfig(new AudioModuleConfig())
                     .build();
             bot.setJDA(jda);
 
@@ -171,10 +169,10 @@ public class JMusicBot
         // instantiate about command
         AboutCommand aboutCommand = new AboutCommand(Color.BLUE.brighter(),
                                 "a music bot that is [easy to host yourself!](https://github.com/jagrosh/MusicBot) (v" + OtherUtil.getCurrentVersion() + ")",
-                                new String[]{"High-quality music playback", "FairQueue™ Technology", "Easy to host yourself"},
+                                new String[]{"High-quality music playback", "FairQueueâ„¢ Technology", "Easy to host yourself"},
                                 RECOMMENDED_PERMS);
         aboutCommand.setIsAuthor(false);
-        aboutCommand.setReplacementCharacter("\uD83C\uDFB6"); // 🎶
+        aboutCommand.setReplacementCharacter("\uD83C\uDFB6"); // ðŸŽ¶
         
         // set up the command client
         CommandClientBuilder cb = new CommandClientBuilder()
