@@ -41,7 +41,7 @@ public class BotConfig
     private Path path = null;
     private String token, prefix, altprefix, helpWord, playlistsFolder, logLevel,
             successEmoji, warningEmoji, errorEmoji, loadingEmoji, searchingEmoji,
-            evalEngine;
+            evalEngine, youtubeOAuth, youtubePoToken, youtubeVisitorData;
     private boolean stayInChannel, songInGame, npImages, updatealerts, useEval, dbots;
     private long owner, maxSeconds, aloneTimeUntilStop;
     private int maxYTPlaylistPages;
@@ -91,6 +91,9 @@ public class BotConfig
             logLevel = config.getString("loglevel");
             useEval = config.getBoolean("eval");
             evalEngine = config.getString("evalengine");
+            youtubeOAuth = config.getString("youtubeoauth");
+            youtubePoToken = config.getString("youtubepotoken");
+            youtubeVisitorData = config.getString("youtubevisitordata");
             maxSeconds = config.getLong("maxtime");
             maxYTPlaylistPages = config.getInt("maxytplaylistpages");
             aloneTimeUntilStop = config.getLong("alonetimeuntilstop");
@@ -331,6 +334,21 @@ public class BotConfig
     public String getEvalEngine()
     {
         return evalEngine;
+    }
+
+    public String getYoutubeOAuth()
+    {
+        return youtubeOAuth;
+    }
+
+    public String getYoutubePoToken()
+    {
+        return youtubePoToken;
+    }
+
+    public String getYoutubeVisitorData()
+    {
+        return youtubeVisitorData;
     }
     
     public boolean useNPImages()
