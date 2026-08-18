@@ -32,6 +32,13 @@ import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import dev.lavalink.youtube.clients.Web;
 import net.dv8tion.jda.api.entities.Guild;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  *
@@ -39,11 +46,46 @@ import net.dv8tion.jda.api.entities.Guild;
  */
 public class PlayerManager extends DefaultAudioPlayerManager
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlayerManager.class);
+    private static final String TOKEN_FILE = "youtube_token.txt";
+
     private final Bot bot;
     
     public PlayerManager(Bot bot)
     {
         this.bot = bot;
+    }
+
+    private String readTokenFromFile()
+    {
+        try
+        {
+            Path path = Paths.get(TOKEN_FILE);
+            if(Files.exists(path))
+            {
+                String token = Files.readString(path).trim();
+                if(!token.isEmpty())
+                    return token;
+            }
+        }
+        catch(IOException e)
+        {
+            LOGGER.warn("Could not read YouTube token file: {}", e.getMessage());
+        }
+        return null;
+    }
+
+    private void saveTokenToFile(String token)
+    {
+        try
+        {
+            Files.writeString(Paths.get(TOKEN_FILE), token);
+            LOGGER.info("YouTube OAuth refresh token saved to {}", TOKEN_FILE);
+        }
+        catch(IOException e)
+        {
+            LOGGER.warn("Could not save YouTube token to file: {}", e.getMessage());
+        }
     }
     
     public void init()
@@ -52,14 +94,44 @@ public class PlayerManager extends DefaultAudioPlayerManager
 
         YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true);
         yt.setPlaylistPageCount(bot.getConfig().getMaxYTPlaylistPages());
+
         String oauth = bot.getConfig().getYoutubeOAuth();
         if(oauth != null && !oauth.isEmpty())
+        {
             yt.useOauth2(oauth, true);
+        }
         else
         {
             String poToken = bot.getConfig().getYoutubePoToken();
             if(poToken != null && !poToken.isEmpty())
+            {
                 Web.setPoTokenAndVisitorData(poToken, bot.getConfig().getYoutubeVisitorData());
+            }
+            else
+            {
+                String savedToken = readTokenFromFile();
+                if(savedToken != null)
+                {
+                    LOGGER.info("Loaded YouTube OAuth refresh token from {}", TOKEN_FILE);
+                    yt.useOauth2(savedToken, true);
+                }
+                else
+                {
+                    LOGGER.info("No YouTube token found. Starting interactive OAuth flow...");
+                    LOGGER.info("Follow the instructions in the console to authenticate.");
+                    yt.useOauth2(null, false);
+                    String newToken = yt.getOauth2RefreshToken();
+                    if(newToken != null)
+                    {
+                        saveTokenToFile(newToken);
+                    }
+                    else
+                    {
+                        LOGGER.warn("OAuth flow completed but refresh token could not be retrieved.");
+                        LOGGER.warn("Check logging level for dev.lavalink.youtube.http.YoutubeOauth2Handler=INFO");
+                    }
+                }
+            }
         }
         registerSourceManager(yt);
 
