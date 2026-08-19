@@ -29,8 +29,16 @@ import com.sedmelluq.discord.lavaplayer.source.nico.NicoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
+import dev.lavalink.youtube.clients.skeleton.Client;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.clients.MWeb;
+import dev.lavalink.youtube.clients.Music;
+import dev.lavalink.youtube.clients.TvHtml5Simply;
 import dev.lavalink.youtube.clients.Web;
+import dev.lavalink.youtube.clients.WebEmbedded;
+import dev.lavalink.youtube.clients.AndroidVr;
+import dev.lavalink.youtube.clients.AndroidMusic;
+import dev.lavalink.youtube.clients.Ios;
 import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,13 +100,30 @@ public class PlayerManager extends DefaultAudioPlayerManager
     {
         TransformativeAudioSourceManager.createTransforms(bot.getConfig().getTransforms()).forEach(t -> registerSourceManager(t));
 
-        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true);
+        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true, new Client[] {
+            new Music(),
+            new Web(),
+            new WebEmbedded(),
+            new AndroidVr(),
+            new AndroidMusic(),
+            new MWeb(),
+            new TvHtml5Simply(),
+            new Ios()
+        });
         yt.setPlaylistPageCount(bot.getConfig().getMaxYTPlaylistPages());
 
         String oauth = bot.getConfig().getYoutubeOAuth();
         if(oauth != null && !oauth.isEmpty())
         {
-            yt.useOauth2(oauth, true);
+            try
+            {
+                yt.useOauth2(oauth, true);
+            }
+            catch(Exception e)
+            {
+                LOGGER.warn("YouTube OAuth with provided token failed: {}", e.getMessage());
+                LOGGER.warn("Continuing without OAuth — some videos may not work.");
+            }
         }
         else
         {
@@ -112,23 +137,40 @@ public class PlayerManager extends DefaultAudioPlayerManager
                 String savedToken = readTokenFromFile();
                 if(savedToken != null)
                 {
-                    LOGGER.info("Loaded YouTube OAuth refresh token from {}", TOKEN_FILE);
-                    yt.useOauth2(savedToken, true);
+                    try
+                    {
+                        LOGGER.info("Loaded YouTube OAuth refresh token from {}", TOKEN_FILE);
+                        yt.useOauth2(savedToken, true);
+                    }
+                    catch(Exception e)
+                    {
+                        LOGGER.warn("YouTube OAuth with saved token failed: {}", e.getMessage());
+                        LOGGER.warn("The token may be invalid or expired. Delete {} and restart to re-authenticate.", TOKEN_FILE);
+                        LOGGER.warn("Continuing without OAuth — some videos may not work.");
+                    }
                 }
                 else
                 {
                     LOGGER.info("No YouTube token found. Starting interactive OAuth flow...");
                     LOGGER.info("Follow the instructions in the console to authenticate.");
-                    yt.useOauth2(null, false);
-                    String newToken = yt.getOauth2RefreshToken();
-                    if(newToken != null)
+                    try
                     {
-                        saveTokenToFile(newToken);
+                        yt.useOauth2(null, false);
+                        String newToken = yt.getOauth2RefreshToken();
+                        if(newToken != null)
+                        {
+                            saveTokenToFile(newToken);
+                        }
+                        else
+                        {
+                            LOGGER.warn("OAuth flow completed but refresh token could not be retrieved.");
+                            LOGGER.warn("Check logging level for dev.lavalink.youtube.http.YoutubeOauth2Handler=INFO");
+                        }
                     }
-                    else
+                    catch(Exception e)
                     {
-                        LOGGER.warn("OAuth flow completed but refresh token could not be retrieved.");
-                        LOGGER.warn("Check logging level for dev.lavalink.youtube.http.YoutubeOauth2Handler=INFO");
+                        LOGGER.warn("YouTube OAuth flow failed: {}", e.getMessage());
+                        LOGGER.warn("Continuing without OAuth — some videos may not work.");
                     }
                 }
             }
