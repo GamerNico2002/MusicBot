@@ -31,6 +31,7 @@ import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceMan
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import dev.lavalink.youtube.clients.skeleton.Client;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.YoutubeSourceOptions;
 import dev.lavalink.youtube.clients.MWeb;
 import dev.lavalink.youtube.clients.Music;
 import dev.lavalink.youtube.clients.TvHtml5Simply;
@@ -100,7 +101,9 @@ public class PlayerManager extends DefaultAudioPlayerManager
     {
         TransformativeAudioSourceManager.createTransforms(bot.getConfig().getTransforms()).forEach(t -> registerSourceManager(t));
 
-        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true, new Client[] {
+        YoutubeSourceOptions options = new YoutubeSourceOptions()
+            .setRemoteCipher("https://cipher.kikkia.dev/", "", "JMusicBot");
+        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(options, new Client[] {
             new Music(),
             new Web(),
             new WebEmbedded(),

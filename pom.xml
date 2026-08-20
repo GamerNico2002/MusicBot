@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jagrosh</groupId>
     <artifactId>JMusicBot</artifactId>
-    <version>5.7</version>
+    <version>5.8-SNAPSHOT</version>
     <packaging>jar</packaging>
     <repositories>
         <repository>
@@ -33,6 +33,15 @@
             <id>arbjergDev</id>
             <name>Lavalink Repository</name>
             <url>https://maven.lavalink.dev/releases</url>
+        </repository>
+        <repository>
+            <id>arbjergSnapshots</id>
+            <name>Lavalink Snapshots</name>
+            <url>https://maven.lavalink.dev/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
         </repository>
 
     </repositories>
@@ -70,7 +79,7 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>v2</artifactId>
-            <version>1.18.2</version>
+            <version>f45bbb7aebfcbc1c553769e04af6cd43afa8b7c3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.jagrosh</groupId>
